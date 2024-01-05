@@ -45,7 +45,7 @@ const Register = () => {
 
     try {
       const response = await fetch(
-        "http://3.22.79.158:8000/api/user/register/",
+        "https://backend.tonserve.com:8000/api/user/register/",
         {
           method: "POST",
           headers: {
