@@ -45,7 +45,7 @@ const LeftSidebarPage = ({ pathId }) => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://3.22.79.158:8000/api/alp/products/${pathId}/`, {
+        const response = await axios.get(`https://backend.tonserve.com:8000/api/products/${pathId}/`, {
           headers: {
             Accept: 'application/json',
           },

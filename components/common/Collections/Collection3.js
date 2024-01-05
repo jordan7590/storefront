@@ -36,7 +36,7 @@ const TopCollection = ({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://3.22.79.158:8000/api/alp/getstyles/?page=1&page_size=8');
+        const response = await axios.get('https://backend.tonserve.com:8000/api/products/?page=1&page_size=8');
         setProducts(response.data.results); // Assuming the data structure has a 'results' key containing an array of products
         console.log(response.data);
       } catch (error) {

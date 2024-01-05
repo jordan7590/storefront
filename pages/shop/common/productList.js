@@ -76,7 +76,7 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
       try {
         setIsLoading(true);
   
-        let apiUrl = `http://3.22.79.158:8000/api/alp/getstyles/?page=${currentPage}&page_size=${limit}`;
+        let apiUrl = `https://backend.tonserve.com:8000/api/products/?page=${currentPage}&page_size=${limit}`;
   
         if (selectedCategory) {
           apiUrl += `&category=${selectedCategory}`;

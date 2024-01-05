@@ -56,10 +56,10 @@ const Fashion = () => {
       />
       <ServiceLayout sectionClass="border-section small-section" />
       <Blog type="fashion" title="title1" inner="title-inner1" />
-      <Instagram type="fashion" />
+      {/* <Instagram type="fashion" />
       <div className="section-b-space">
         <LogoBlock />
-      </div>
+      </div> */}
       <MasterFooter
         footerClass={`footer-light`}
         footerLayOut={"light-layout upper-footer"}

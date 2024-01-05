@@ -4,9 +4,9 @@ import FilterContext from "../../../helpers/filter/FilterContext";
 import axios from 'axios'; // or use fetch
 
 // Replace with your actual E-Commerce API URL and credentials
-const API_URL = 'https://mobile-app-backend-node.vercel.app/auth/demo-data';
-const CONSUMER_KEY = 'ck_8425a729582a4b0e6830dfa3581301ec2ee02f31';
-const CONSUMER_SECRET = 'cs_f4412e8c668a08166522ae9d2d5a034cdb5ea575';
+// const API_URL = 'https://mobile-app-backend-node.vercel.app/auth/demo-data';
+// const CONSUMER_KEY = 'ck_8425a729582a4b0e6830dfa3581301ec2ee02f31';
+// const CONSUMER_SECRET = 'cs_f4412e8c668a08166522ae9d2d5a034cdb5ea575';
 
 
 const Category = () => {
@@ -24,7 +24,7 @@ const Category = () => {
         setLoading(true);
 
         const response = await axios.get(
-          'http://3.22.79.158:8000/api/alp/getcategories/',
+          'https://backend.tonserve.com:8000/api/products/categories/',
           {
             headers: {
               accept: 'application/json',
