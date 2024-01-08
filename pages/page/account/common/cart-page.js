@@ -41,14 +41,14 @@ const CartPage = () => {
                       <tbody key={index}>
                         <tr>
                           <td>
-                            <Link href={`/product-details/` + item.style_number}>
+                            <Link href={`/product-details/` + item.item_number}>
                               <a>
-                              {item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
-                              <Media
-                                src={`https://www.alphabroder.com/media/hires/${item.products.find(product => product.item_number === item.sizesQuantities[0].item_number).front_image}`}
-                                alt=""
-                              />
-                            ) : (
+                              {item.variations && Array.isArray(item.variations) && item.variations.length > 0 && item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
+                                  <Media
+                                    src={`https://www.alphabroder.com/media/hires/${item.variations.find(product => product.item_number === item.sizesQuantities[0].item_number)?.front_image}`}
+                                    alt=""
+                                  />
+                              ) : (
                               <img src={defaultImageUrl} alt="Default" />
                               )}
 
@@ -56,7 +56,7 @@ const CartPage = () => {
                             </Link>
                           </td>
                           <td>
-                            <Link href={`/product-details/` + item.style_number}>
+                            <Link href={`/product-details/` + item.item_number}>
                               <a>{item.short_description}</a>
                             </Link>
                             <p>Color: {item.color}</p>

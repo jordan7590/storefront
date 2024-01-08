@@ -95,7 +95,7 @@ const LeftSidebarPage = ({ pathId }) => {
     return <div>Loading...</div>;
   }
 
-  if (!product || !product.products || product.products.length === 0) {
+  if (!product || !product.variations || product.variations.length === 0) {
     return <div>No products found</div>;
   }
 
@@ -131,7 +131,7 @@ const LeftSidebarPage = ({ pathId }) => {
             className="product-slick"
             beforeChange={(oldIndex, newIndex) => setSelectedImageIndex(newIndex)}
           >
-            {product.products.map((item, index) => (
+            {product.variations.map((item, index) => (
               <div key={index}>
                 <ImageZoom
                   image={{
@@ -147,7 +147,7 @@ const LeftSidebarPage = ({ pathId }) => {
             asNavFor={nav1}
             ref={slider2}
           >
-            {product.products.map((item, index) => (
+            {product.variations.map((item, index) => (
               <div key={index} onClick={() => handleImageChange(index)}>
                 <Media
                   src={`https://www.alphabroder.com/media/hires/${item.front_image}`}

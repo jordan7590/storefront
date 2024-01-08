@@ -34,15 +34,15 @@ const DetailsWithPrice = ({ item, stickyClass }) => {
   // const isInStock = product.stock_status === "instock";
 
   const findLowestAndHighestPrices = (product) => {
-    if (!product || !product.products || product.products.length === 0) {
+    if (!product || !product.variations || product.variations.length === 0) {
       return { lowestPrice: null, highestPrice: null };
     }
   
-    let lowestPrice = parseFloat(product.products[0].price.retail_price);
-    let highestPrice = parseFloat(product.products[0].price.retail_price);
+    let lowestPrice = parseFloat(product.variations[0].retail_price);
+    let highestPrice = parseFloat(product.variations[0].retail_price);
   
-    for (let i = 1; i < product.products.length; i++) {
-      const currentPrice = parseFloat(product.products[i].price.retail_price);
+    for (let i = 1; i < product.variations.length; i++) {
+      const currentPrice = parseFloat(product.variations[i].retail_price);
       if (currentPrice < lowestPrice) {
         lowestPrice = currentPrice;
       }
@@ -73,7 +73,7 @@ const DetailsWithPrice = ({ item, stickyClass }) => {
     // Iterate through sizeQuantities to gather information about selected sizes and quantities
     for (const size in sizeQuantities) {
       if (sizeQuantities.hasOwnProperty(size) && sizeQuantities[size] > 0) {
-        const selectedItem = product.products.find(
+        const selectedItem = product.variations.find(
           (prod) => prod.color_code === selectedColor && prod.size === size
         );
   
@@ -112,22 +112,28 @@ const handleSizeQuantityChange = (size, quantity) => {
 
   }
 };
+
+
 // Function to get available stock for a particular size
 const getAvailableStock = (size) => {
-  const selectedItem = product.products.find(
+  // console.log('Selected Color:', selectedColor);
+  // console.log('Size:', size);
+  const selectedItem = product.variations.find(
     (prod) => prod.color_code === selectedColor && prod.size === size
   );
 
-  if (selectedItem && selectedItem.inventory) {
-    return selectedItem.inventory.total_sum || 0;
+  if (selectedItem && selectedItem.quantity !== undefined) {
+    // console.log('Selected Item:', selectedItem); // Log the found item for debugging
+    return selectedItem.quantity;
   }
 
   return 0;
 };
 
+
   // Get all available sizes for the selected color
   const availableSizes = selectedColor
-    ? product.products
+    ? product.variations
         .filter((prod) => prod.color_code === selectedColor)
         .map((prod) => prod.size)
     : [];
@@ -137,14 +143,14 @@ const getAvailableStock = (size) => {
     return availableSizes.map((size, index) => {
       const availableStock = getAvailableStock(size);
       const maxQuantity = availableStock > 0 ? availableStock : 0;
-      const selectedItem = product.products.find(
+      const selectedItem = product.variations.find(
         (prod) => prod.color_code === selectedColor && prod.size === size
       );
   
       return (
         <div key={index} className="size-quantity-input">
           {/* <p>Item Number: {selectedItem ? selectedItem.item_number : "-"}</p> */}
-          <p className="size-box-price">{symbol}{selectedItem ? selectedItem.price.retail_price : "-"}</p>
+          <p className="size-box-price">{symbol}{selectedItem ? selectedItem.retail_price : "-"}</p>
           <span className="size-box-span">
           <input
             className="size-box-input"
@@ -157,6 +163,7 @@ const getAvailableStock = (size) => {
           </span>
           
           <span className="size-box-size-value">{size}</span>
+          <span className="size-box-size-value">{availableStock}</span>
 
           {/* <p> Stock: {availableStock}</p> */}
         </div>
@@ -171,12 +178,12 @@ const getAvailableStock = (size) => {
             for (const size in sizeQuantities) {
               if (sizeQuantities.hasOwnProperty(size)) {
                 const quantity = sizeQuantities[size];
-                const selectedItem = product.products.find(
+                const selectedItem = product.variations.find(
                   (prod) => prod.color_code === selectedColor && prod.size === size
                 );
           
                 if (selectedItem && quantity > 0) {
-                  totalPrice += selectedItem.price.retail_price * quantity;
+                  totalPrice += selectedItem.retail_price * quantity;
                 }
               }
             }
@@ -190,7 +197,7 @@ const getAvailableStock = (size) => {
     const selectedColorCode = e.target.value;
     setSelectedColor(selectedColorCode);
   
-    const selectedColorInfo = product.products.find((prod) => prod.color_code === selectedColorCode);
+    const selectedColorInfo = product.variations.find((prod) => prod.color_code === selectedColorCode);
     if (selectedColorInfo) {
       // Set the selected color's name and code
       const { color_code, color_name, hex_code } = selectedColorInfo;
@@ -221,18 +228,18 @@ const getAvailableStock = (size) => {
   };
 
   // Extracting unique color options from the provided JSON and removing duplicates
-  const uniqueColors = Array.from(new Set(product.products.map((prod) => prod.color_code)));
+  const uniqueColors = Array.from(new Set(product.variations.map((prod) => prod.color_code)));
 
   const handleSizeChange = (e) => {
     setSelectedSize(e.target.value);
-    const selectedItem = product.products.find(
+    const selectedItem = product.variations.find(
       (prod) => prod.color_code === selectedColor && prod.size === e.target.value
     );
     if (selectedItem) {
       setSelectedItemNumber(selectedItem.item_number); // Set the item_number for the selected combination
-      setSelectedItemTotalStock(selectedItem.inventory.total_sum); 
-      setIsInStock(selectedItem.inventory.total_sum > 0); // Set isInStock based on the total stock count
-      setSelectedItemRetailPrice(selectedItem.price.retail_price); // Set the item_number for the selected combination
+      setSelectedItemTotalStock(selectedItem.quantity); 
+      setIsInStock(selectedItem.quantity > 0); // Set isInStock based on the total stock count
+      setSelectedItemRetailPrice(selectedItem.retail_price); // Set the item_number for the selected combination
     }
   };
 
@@ -291,9 +298,9 @@ const getAvailableStock = (size) => {
   >
     <option value="">Select Color</option>
     {uniqueColors.map((colorCode, index) => {
-      const selectedColorInfo = product.products.find((prod) => prod.color_code === colorCode);
+      const selectedColorInfo = product.variations.find((prod) => prod.color_code === colorCode);
       return (
-        <option key={index} value={colorCode}>
+        <option key={index} value={colorCode} id={colorCode}>
           {/* Display both color name and code */}
          {selectedColorInfo && `${selectedColorInfo.color_name} - #${selectedColorInfo.hex_code}`}
         </option>

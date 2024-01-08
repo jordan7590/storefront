@@ -47,7 +47,7 @@ const ProductItem = ({
 
   const clickProductDetail = () => {
     const titleProps = product.short_description.split(" ").join("-");
-    router.push(`/product-details/${product.style_number}` + "-" + `${titleProps}`);
+    router.push(`/product-details/${product.product_number}` + "-" + `${titleProps}`);
   };
 
   const variantChangeByColor = (imgId, product_images) => {
@@ -207,6 +207,7 @@ const ProductItem = ({
               <div className="product-right">
                 {/* <h2> {product.title} </h2> */}
                 <h2> {product.short_description} </h2> 
+                {/* <h2> {product.product_number} </h2>  */}
                 <h3>
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}

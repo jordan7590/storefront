@@ -11,20 +11,20 @@ const CartHeader = ({ item, symbol }) => {
     <Fragment>
       <li>
         <div className="media">
-          <Link href={"/product-details/" + item.style_number}>
+          <Link href={"/product-details/" + item.product_number}>
             <a>
-            {item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
-                <Media
-                  src={`https://www.alphabroder.com/media/hires/${item.products.find(product => product.item_number === item.sizesQuantities[0].item_number).front_image}`}
-                  alt=""
-                />
-              ) : (
+            {item.variations && Array.isArray(item.variations) && item.variations.length > 0 && item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
+    <Media
+      src={`https://www.alphabroder.com/media/hires/${item.variations.find(product => product.item_number === item.sizesQuantities[0].item_number)?.front_image}`}
+      alt=""
+    />
+) : (
                 <img src={defaultImageUrl} alt="Default" />
               )} 
            </a>
           </Link>
           <div className="media-body">
-            <Link href={"/product-details/" + item.style_number}>
+            <Link href={"/product-details/" + item.product_number}>
               <a>
                 <h6>{item.short_description}</h6>
               </a>

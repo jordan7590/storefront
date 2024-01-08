@@ -50,7 +50,7 @@ const removeFromCart = (product) => {
   toast.error("Product Removed Successfully !");
   
   // Filter out the specific product to remove based on its ID or another unique identifier
-  const updatedCartItems = cartItems.filter((item) => item.style_number !== product.style_number);
+  const updatedCartItems = cartItems.filter((item) => item.product_number !== product.product_number);
   setCartItems(updatedCartItems);
 };
 
