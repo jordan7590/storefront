@@ -27,7 +27,7 @@ export default function MyApp({ Component, pageProps }) {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker
-          .register('./public/sw.js') // Replace with the correct path to your service worker file
+          .register('./sw.js') // Replace with the correct path to your service worker file
           .then((registration) => {
             console.log('Service Worker registered with scope:', registration.scope);
           })
