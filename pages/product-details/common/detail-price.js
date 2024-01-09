@@ -7,6 +7,7 @@ import CartContext from "../../../helpers/cart";
 import CountdownComponent from "../../../components/common/widgets/countdownComponent";
 import MasterSocial from "./master_social";
 import { toast } from "react-toastify";
+// import Select from 'react-select';
 
 const DetailsWithPrice = ({ item, stickyClass }) => {
   const [modal, setModal] = useState(false);
@@ -32,6 +33,15 @@ const DetailsWithPrice = ({ item, stickyClass }) => {
 
 
   // const isInStock = product.stock_status === "instock";
+
+
+//color select
+  // const colorOptions = product.variations.map((variation) => ({
+  //   value: variation.color_code,
+  //   label: variation.color_name,
+  //   color: `#${variation.hex_code}`,
+  // }));
+
 
   const findLowestAndHighestPrices = (product) => {
     if (!product || !product.variations || product.variations.length === 0) {
@@ -140,7 +150,12 @@ const getAvailableStock = (size) => {
 
   // Render quantity inputs for each available size
   const renderSizeQuantities = () => {
-    return availableSizes.map((size, index) => {
+    const sizesWithAvailableStock = availableSizes.filter((size) => {
+      const availableStock = getAvailableStock(size);
+      return availableStock > 0;
+    });
+  
+    return sizesWithAvailableStock.map((size, index) => {
       const availableStock = getAvailableStock(size);
       const maxQuantity = availableStock > 0 ? availableStock : 0;
       const selectedItem = product.variations.find(
@@ -157,8 +172,9 @@ const getAvailableStock = (size) => {
             type="number"
             min="0"
             max={maxQuantity}
-            value={sizeQuantities[size] || 0}
+            value={sizeQuantities[size] || ''}
             onChange={(e) => handleSizeQuantityChange(size, parseInt(e.target.value))}
+            placeholder="0"
           />
           </span>
           
@@ -300,10 +316,15 @@ const getAvailableStock = (size) => {
     {uniqueColors.map((colorCode, index) => {
       const selectedColorInfo = product.variations.find((prod) => prod.color_code === colorCode);
       return (
-        <option key={index} value={colorCode} id={colorCode}>
+        <>
+           
+        <option key={index} value={colorCode} id={selectedColorInfo.hex_code}>
           {/* Display both color name and code */}
          {selectedColorInfo && `${selectedColorInfo.color_name} - #${selectedColorInfo.hex_code}`}
+          {/* <div>hell</div> */}
         </option>
+        </>
+   
       );
     })}
   </select>
