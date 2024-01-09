@@ -17,10 +17,11 @@ const nextConfig = {
     return config;
   },
 };
-module.exports = nextConfig;
+
 const withImages = require('next-images');
 
 module.exports = withImages({
+  ...nextConfig,
   target: 'serverless',
   images: {
     disableStaticImages: true,

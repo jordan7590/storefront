@@ -21,6 +21,24 @@ export default function MyApp({ Component, pageProps }) {
   const [url, setUrl] = useState();
   const apolloClient = useApollo(pageProps)
 
+
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js') // Replace with the correct path to your service worker file
+          .then((registration) => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('Service Worker registration failed:', error);
+          });
+      });
+    }
+  }, []); // Ensure this useEffect runs only once on component mount
+
+  
   useEffect(() => {
     const path = window.location.pathname.split("/");
     const url = path[path.length - 1];
