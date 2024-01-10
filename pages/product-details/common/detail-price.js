@@ -30,7 +30,7 @@ const DetailsWithPrice = ({ item, stickyClass }) => {
   const [selectedItemRetailPrice, setSelectedItemRetailPrice] = useState(""); 
   const [isInStock, setIsInStock ] = useState("false"); 
   const [sizeQuantities, setSizeQuantities] = useState({}); // State to hold quantities for each size
-
+  const [selectedHexCode, setSelectedHexCode] = useState('');
 
   // const isInStock = product.stock_status === "instock";
 
@@ -222,6 +222,8 @@ const getAvailableStock = (size) => {
       console.log(`Selected Color Name: ${color_name}`);
       console.log(`Selected Color Hex Code: ${hex_code}`);
 
+      setSelectedHexCode(selectedColorInfo.hex_code);
+
       // Rest of your existing logic...
   
       // Rest of your existing logic...
@@ -275,6 +277,7 @@ const getAvailableStock = (size) => {
     context.setQuantity(value);
   };
 
+  
 
  // Assuming `colorOptions` is derived from `product.attributes`
 //  const colorOptions = product?.attributes?.find(
@@ -288,7 +291,11 @@ const getAvailableStock = (size) => {
 //   setSelectedColor(e.target.value);
 // };
 
-
+const dynamicStyle = {
+  color: `#${selectedHexCode} `|| 'red', // Use a prop 'color' or default to 'red'
+  
+};
+console.log(selectedHexCode);
   return (
     <>
       <div className={`product-right ${stickyClass}`}>
@@ -311,23 +318,62 @@ const getAvailableStock = (size) => {
     className="color-variant-dropdown"
     value={selectedColor}
     onChange={handleColorChange}
+    style={dynamicStyle}
+   
   >
-    <option value="">Select Color</option>
+  
+    <option value="" >Select Color</option>
     {uniqueColors.map((colorCode, index) => {
       const selectedColorInfo = product.variations.find((prod) => prod.color_code === colorCode);
       return (
         <>
            
-        <option key={index} value={colorCode} id={selectedColorInfo.hex_code}>
+       
+        <option key={index} value={colorCode} id={`#${selectedColorInfo.hex_code}`}  style={{ color: `#${selectedColorInfo.hex_code}`,'--selected-color': `#${selectedColorInfo.hex_code}`}}>
           {/* Display both color name and code */}
-         {selectedColorInfo && `${selectedColorInfo.color_name} - #${selectedColorInfo.hex_code}`}
+         
+          &#9724;{selectedColorInfo && `${selectedColorInfo.color_name} - #${selectedColorInfo.hex_code} `  }
           {/* <div>hell</div> */}
         </option>
+        
+        
         </>
    
       );
     })}
+
+
+    
   </select>
+  {/* <select
+          className="color-variant-dropdown"
+          value={selectedColor}
+          onChange={handleColorChange}
+        >
+          <option value="">Select Color</option>
+          {uniqueColors.map((colorCode, index) => {
+            const selectedColorInfo = product.variations.find(
+              (prod) => prod.color_code === colorCode
+            );
+           
+            return (
+              <option
+                key={index}
+                value="fa fa-bell"
+                className="custom-option fa"
+                style={{
+                  color: `#${selectedColorInfo.hex_code}`,
+                }}>
+              
+              &#9724;{selectedColorInfo && `${selectedColorInfo.color_name} - #${selectedColorInfo.hex_code} ` }
+              
+              </option>
+            );
+          })}
+        </select>
+         */}
+        
+        
 </div>
 
      {/* Display quantity inputs for selected color's sizes */}

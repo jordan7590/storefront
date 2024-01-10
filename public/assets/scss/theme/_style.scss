@@ -14536,3 +14536,18 @@ span.size-box-size-value {
   border-color: #211F5E !important;
   color: #fff !important;
 }
+
+$customColor: --selected-color; // Define a variable
+
+.custom-option {
+  font-family: 'Lato', 'Font Awesome 5 Free', 'Font Awesome 5 Brands';
+   font-weight: 900;
+ padding: 1rem 2rem;
+font-size: 18px;
+}
+
+select.color-variant-dropdown{
+  
+
+  color: $customColor;
+}
