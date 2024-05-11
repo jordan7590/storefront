@@ -9,14 +9,6 @@ import DetailsWithPrice from '../common/detail-price';
 import Filter from '../common/filter';
 import { Container, Row, Col, Media } from 'reactstrap';
 
-
-
-// Replace with your actual E-Commerce API URL and credentials
-// const API_URL = 'https://medicallogowear.com/wp-json/wc/v3/products/';
-// const CONSUMER_KEY = 'ck_8425a729582a4b0e6830dfa3581301ec2ee02f31';
-// const CONSUMER_SECRET = 'cs_f4412e8c668a08166522ae9d2d5a034cdb5ea575';
-
-
 const LeftSidebarPage = ({ pathId }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,10 +37,11 @@ const LeftSidebarPage = ({ pathId }) => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://backend.tonserve.com:8000/api/products/${pathId}/`, {
-          headers: {
-            Accept: 'application/json',
-          },
+        const response = await axios.get(`https://tonserve.com/hfh/wp-json/wc/v3/products/${pathId}`, {
+          auth: {
+            username: 'ck_86a3fc5979726afb7a1dd66fb12329bef3b365e2',
+            password: 'cs_19bb38d1e28e58f10b3ee8829b3cfc182b8eb3ea'
+          }
         });
         setProduct(response.data);
         console.log(response.data);
@@ -62,22 +55,19 @@ const LeftSidebarPage = ({ pathId }) => {
     fetchProduct();
   }, [pathId]);
 
- // Use this function to handle the image change in the first slider
- const handleImageChange = (index) => {
-  setSelectedImageIndex(index);
-  if (slider1.current) {
-    slider1.current.slickGoTo(index);
-  }
-};
+  const handleImageChange = (index) => {
+    setSelectedImageIndex(index);
+    if (slider1.current) {
+      slider1.current.slickGoTo(index);
+    }
+  };
 
-  // Update the useEffect hook that sets the state for nav1 and nav2
   useEffect(() => {
     setState({
       nav1: slider1.current,
       nav2: slider2.current,
     });
-  }, [product, selectedImageIndex]); // Include selectedImageIndex in the dependency array
-
+  }, [product, selectedImageIndex]);
 
   const { nav1, nav2 } = state;
 
@@ -99,82 +89,83 @@ const LeftSidebarPage = ({ pathId }) => {
     return <div>No products found</div>;
   }
 
-
   return (
     <section className="">
-    <div className="collection-wrapper">
-      <Container>
-        <Row>
-          
-          <Col sm="3" className="collection-filter" id="filter">
-            <Filter />
-            <Service />
-            <NewProduct />
-          </Col>
-          <Col lg="9" sm="12" xs="12">
-            <Container fluid={true}>
-              <Row>
-                <Col xl="12" className="filter-col">
-                  <div className="filter-main-btn mb-2">
-                    <span onClick={filterClick} className="filter-btn">
-                      <i className="fa fa-filter" aria-hidden="true"></i> filter
-                    </span>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col lg="6" className="product-thumbnail">
-                <Slider
-            {...productsSliderSettings}
-            asNavFor={nav2}
-            ref={slider1}
-            className="product-slick"
-            beforeChange={(oldIndex, newIndex) => setSelectedImageIndex(newIndex)}
-          >
-            {product.variations.map((item, index) => (
-              <div key={index}>
-                <ImageZoom
-                  image={{
-                    src: `https://www.alphabroder.com/media/hires/${item.front_image}`,
-                  }}
-                />
-              </div>
-            ))}
-          </Slider>
-          <Slider
-            className="slider-nav"
-            {...productsNavSliderSettings}
-            asNavFor={nav1}
-            ref={slider2}
-          >
-            {product.variations.map((item, index) => (
-              <div key={index} onClick={() => handleImageChange(index)}>
-                <Media
-                  src={`https://www.alphabroder.com/media/hires/${item.front_image}`}
-                  alt={`Product image ${index + 1}`}
-                  className="img-fluid"
-                />
-             Product image: {index + 1}
-              </div>
-            ))}
-          </Slider>
-                </Col>
-                <Col lg="6" className="rtl-text">
-                  <DetailsWithPrice
-                    item={product}
-                    changeColorVar={changeColorVar}
-                  />
-                </Col>
-              </Row>
-            </Container>
-            <ProductTab
-               item={product}
-            />
-          </Col>
-        </Row>
-      </Container>
-    </div>
-  </section>
+      <div className="collection-wrapper">
+        <Container>
+          <Row>
+            <Col sm="3" className="collection-filter" id="filter">
+              <Filter />
+              <Service />
+              <NewProduct />
+            </Col>
+            <Col lg="9" sm="12" xs="12">
+              <Container fluid={true}>
+                <Row>
+                  <Col xl="12" className="filter-col">
+                    <div className="filter-main-btn mb-2">
+                      <span onClick={filterClick} className="filter-btn">
+                        <i className="fa fa-filter" aria-hidden="true"></i> filter
+                      </span>
+                    </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg="6" className="product-thumbnail">
+                  <Slider
+                        {...productsSliderSettings}
+                        asNavFor={nav2}
+                        ref={slider1}
+                        className="product-slick"
+                        beforeChange={(oldIndex, newIndex) => setSelectedImageIndex(newIndex)}
+                      >
+                        {product.variations.map((item, index) => (
+                          <div key={index}>
+                            {item.images && item.images.length > 0 && (
+                              <ImageZoom
+                                image={{
+                                  src: item.images[0].src,
+                                }}
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </Slider>
+                      <Slider
+                            className="slider-nav"
+                            {...productsNavSliderSettings}
+                            asNavFor={nav1}
+                            ref={slider2}
+                          >
+                            {product.variations.map((item, index) => (
+                              <div key={index} onClick={() => handleImageChange(index)}>
+                                {item.images && item.images.length > 0 && (
+                                  <Media
+                                    src={item.images[0].src}
+                                    alt={`Product image ${index + 1}`}
+                                    className="img-fluid"
+                                  />
+                                )}
+                              </div>
+                            ))}
+                          </Slider>
+                  </Col>
+                  <Col lg="6" className="rtl-text">
+                    <DetailsWithPrice
+                      item={product}
+                      changeColorVar={changeColorVar}
+                    />
+                  </Col>
+                </Row>
+              </Container>
+              <ProductTab
+                item={product}
+              />
+            </Col>
+          </Row>
+        </Container>
+      </div>
+    </section>
   );
 };
 

@@ -11,7 +11,7 @@ const CartHeader = ({ item, symbol }) => {
     <Fragment>
       <li>
         <div className="media">
-          <Link href={"/product-details/" + item.product_number}>
+          <Link href={"/product-details/" + item.id}>
             <a>
             {item.variations && Array.isArray(item.variations) && item.variations.length > 0 && item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
     <Media
@@ -24,15 +24,21 @@ const CartHeader = ({ item, symbol }) => {
            </a>
           </Link>
           <div className="media-body">
-            <Link href={"/product-details/" + item.product_number}>
+            <Link href={"/product-details/" + item.id}>
               <a>
-                <h6>{item.short_description}</h6>
+                <h6>{item.name}</h6>
               </a>
             </Link>
 
             <h4>
               <span>
-                {item.qty} x {symbol}
+                {
+                item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ?
+                  item.sizesQuantities.reduce((totalQty, sizeQuantity) => totalQty + sizeQuantity.quantity, 0) :
+                  0
+                }
+                                
+                x {symbol}
                 {item.totalPrice}
               </span>
             </h4>

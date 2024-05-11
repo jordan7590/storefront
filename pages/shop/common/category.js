@@ -1,13 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Collapse } from "reactstrap";
 import FilterContext from "../../../helpers/filter/FilterContext";
-import axios from 'axios'; // or use fetch
-
-// Replace with your actual E-Commerce API URL and credentials
-// const API_URL = 'https://mobile-app-backend-node.vercel.app/auth/demo-data';
-// const CONSUMER_KEY = 'ck_8425a729582a4b0e6830dfa3581301ec2ee02f31';
-// const CONSUMER_SECRET = 'cs_f4412e8c668a08166522ae9d2d5a034cdb5ea575';
-
+import axios from 'axios';
 
 const Category = () => {
   const context = useContext(FilterContext);
@@ -17,26 +11,27 @@ const Category = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
 
+        // WooCommerce API endpoint
         const response = await axios.get(
-          'https://backend.tonserve.com:8000/api/products/categories/',
+          'https://tonserve.com/hfh/wp-json/wc/v3/products/categories',
           {
-            headers: {
-              accept: 'application/json',
-            },
+            auth: {
+              username: 'ck_86a3fc5979726afb7a1dd66fb12329bef3b365e2',
+              password: 'cs_19bb38d1e28e58f10b3ee8829b3cfc182b8eb3ea'
+            }
           }
         );
 
         // Modify the response structure to match your existing data structure
-        const formattedCategories = response.data.results.map(item => ({
-          id: item.category, // Replace spaces and pipes with underscores to create unique IDs
-          name: item.category,
-          parent: null, // Assuming there are no parent categories in this API response
+        const formattedCategories = response.data.map(item => ({
+          id: item.id.toString(), // Convert to string if necessary
+          name: item.name,
+          parent: item.parent ? item.parent.toString() : null, // Handle parent category
         }));
 
         setCategories(formattedCategories);

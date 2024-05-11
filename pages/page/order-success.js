@@ -51,7 +51,7 @@ const OrderSuccess = () => {
                                         <Col xs="3" className="order_detail">
                                             <div>
                                                 <h4>product name</h4>
-                                                <h5>{item.short_description}</h5>
+                                                <h5>{item.name}</h5>
                                             </div>
                                         </Col>
                                         <Col xs="3" className="order_detail">

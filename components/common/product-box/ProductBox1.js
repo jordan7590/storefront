@@ -43,11 +43,9 @@ const ProductItem = ({
     setQuantity(parseInt(e.target.value));
   };
 
-// routing to product details page  
-
   const clickProductDetail = () => {
-    const titleProps = product.short_description.split(" ").join("-");
-    router.push(`/product-details/${product.product_number}` + "-" + `${titleProps}`);
+    const titleProps = product.name.split(" ").join("");
+    router.push(`/product-details/${product.id}` + "-" + `${titleProps}`);
   };
 
   const variantChangeByColor = (imgId, product_images) => {
@@ -65,34 +63,27 @@ const ProductItem = ({
           {product.sale === true ? <span className="lable4">on sale</span> : ""}
         </div>
         <div className="front" onClick={clickProductDetail}>
-          {product.front_image && product.front_image.length > 1 ? (
-            <Media
-              src={image || `https://www.alphabroder.com/media/hires/${product.front_image}`
-            }
-              className="img-fluid"
-              alt=""
-            />
-          ) : (
-            <Media
-              src={image || defaultImageUrl}
-              className="img-fluid"
-              alt=""
-            />
-          )}
+          <Media
+            src={`${image ? image : (product.images && product.images.length > 0 ? product.images[0].src : defaultImageUrl)}`}
+            className="img-fluid"
+            alt=""
+          />
         </div>
-
-        {backImage && product.front_image && product.front_image.length > 1 ? (
-  <div className="back" onClick={clickProductDetail}>
-    <Media
-      src={image || `https://www.alphabroder.com/media/hires/${product.front_image}`
-    }
-      className="img-fluid m-auto"
-      alt=""
-    />
-  </div>
-) : (
-  ""
-)}
+        {backImage ? (
+          product.images[1] === "undefined" ? (
+            "false"
+          ) : (
+            <div className="back" onClick={clickProductDetail}>
+              <Media
+            src={`${image ? image : (product.images && product.images.length > 0 ? product.images[0].src : defaultImageUrl)}`}
+            className="img-fluid m-auto"
+                alt=""
+              />
+            </div>
+          )
+        ) : (
+          ""
+        )}
 
         <div className={cartClass}>
           <button title="Add to cart" onClick={addCart}>
@@ -101,12 +92,12 @@ const ProductItem = ({
           <a href={null} title="Add to Wishlist" onClick={addWishlist}>
             <i className="fa fa-heart" aria-hidden="true"></i>
           </a>
-          <a href={null} title="Quick View" onClick={toggle}>
+          {/* <a href={null} title="Quick View" onClick={toggle}>
             <i className="fa fa-search" aria-hidden="true"></i>
           </a>
           <a href={null} title="Compare" onClick={toggleCompare}>
             <i className="fa fa-refresh" aria-hidden="true"></i>
-          </a>
+          </a> */}
           <Modal
             isOpen={modalCompare}
             toggle={toggleCompare}
@@ -117,19 +108,18 @@ const ProductItem = ({
               <Row className="compare-modal">
                 <Col lg="12">
                   <div className="media">
-                   <Media
-                      src={
+                    <Media
+                      src={`${
                         product.variants && image
                           ? image
-                          : (product.front_image && product.front_image.length > 0 ?`https://www.alphabroder.com/media/hires/${product.front_image}` : defaultImageUrl)
-                      }
+                          : (product.images && product.images.length > 0 ? product.images[0].src : defaultImageUrl)}`}
                       alt=""
                       className="img-fluid"
                     />
                     <div className="media-body align-self-center text-center">
                       <h5>
                         <i className="fa fa-check"></i>Item{" "}
-                        <span>{product.short_description} </span>
+                        <span>{product.name} </span>
                         <span> successfully added to your Compare list</span>
                       </h5>
                       <div className="buttons d-flex justify-content-center">
@@ -192,22 +182,17 @@ const ProductItem = ({
           <Row>
             <Col lg="6" xs="12">
               <div className="quick-view-img">
-              <Media
-                src={
-                  product.variants && image
-                    ? image
-                    : (product.front_image && product.front_image.length > 0 ? `https://www.alphabroder.com/media/hires/${product.front_image}` : defaultImageUrl)
-                }
-                alt=""
-                className="img-fluid"
-              />    
+                <Media
+                  src={`${
+                    product.variants && image ? image : (product.images && product.images.length > 0 ? product.images[0].src : defaultImageUrl)}`}
+                  alt=""
+                  className="img-fluid"
+                />
               </div>
             </Col>
             <Col lg="6" className="rtl-text">
               <div className="product-right">
-                {/* <h2> {product.title} </h2> */}
-                <h2> {product.short_description} </h2> 
-                {/* <h2> {product.product_number} </h2>  */}
+                <h2> {product.name} </h2>
                 <h3>
                   {currency.symbol}
                   {(product.price * currency.value).toFixed(2)}
@@ -253,7 +238,7 @@ const ProductItem = ({
                 )}
                 <div className="border-product">
                   <h6 className="product-title">product details</h6>
-                  <p>{product.full_feature_description}</p>
+                  <p>{product.description}</p>
                 </div>
                 <div className="product-description border-product">
                   {product.size ? (
@@ -309,8 +294,7 @@ const ProductItem = ({
                 <div className="product-buttons">
                   <button
                     className="btn btn-solid"
-                    onClick={() => cartContext.addToCart(product, quantity)}
-
+                    onClick={() => addCart(product)}
                   >
                     add to cart
                   </button>

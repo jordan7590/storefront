@@ -24,16 +24,18 @@ const MasterProductDetail = ({
         ) : (
           ""
         )} */}
-        <h6>{product.short_description}</h6>
+        <h6>{product.name}</h6>
         {/* {des ? <p>{product.description}</p> : ""} */}
         <h4>
-          {currency.symbol}
-          {/* {(
+          {/* {currency.symbol}
+          {(
             (product.price - (product.price * product.discount) / 100) *
             currency.value
           ).toFixed(2)} */}
+          {currency.symbol}
+          {(product.price * currency.value).toFixed(2)}
 
-           {(product.price_range.min_price * currency.value).toFixed(2)} - {(product.price_range.max_price * currency.value).toFixed(2)}
+           {/* {(product.price_range.min_price * currency.value).toFixed(2)} - {(product.price_range.max_price * currency.value).toFixed(2)} */}
           {/* <del>
             <span className="money">
               {currency.symbol}

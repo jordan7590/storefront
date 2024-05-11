@@ -44,7 +44,7 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
   const selectedPrice = filterContext.selectedPrice;
   const selectedCategory = filterContext.state;
   const selectedSize = filterContext.selectedSize;
-  const [sortBy, setSortBy] = useState("AscOrder");
+  const [sortBy, setSortBy] = useState("asc");
   const [layout, setLayout] = useState(layoutList);
   const [url, setUrl] = useState();
   // State to store fetched products
@@ -76,29 +76,29 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
       try {
         setIsLoading(true);
   
-        let apiUrl = `https://backend.tonserve.com:8000/api/products/?page=${currentPage}&page_size=${limit}`;
+        let apiUrl = `https://tonserve.com/hfh/wp-json/wc/v3/products?per_page=${limit}&page=${currentPage}&order=${sortBy}`;
   
         if (selectedCategory) {
           apiUrl += `&category=${selectedCategory}`;
         }
   
-        const response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl, {
+          auth: {
+            username: 'ck_86a3fc5979726afb7a1dd66fb12329bef3b365e2',
+            password: 'cs_19bb38d1e28e58f10b3ee8829b3cfc182b8eb3ea'
+          }
+        });
+
+        // Debugging logs
+        console.log("Received products:", response.data);
+        console.log("Total products:", response.data.count);
+        console.log("Selected Cat:", selectedCategory);
+        console.log("Filtered products:", response.data.results);
+        console.log("Selected Page:", currentPage);
   
-        console.log("Received products:", response.data); // Debugging log
-  
-        setTotalCount(response.data.count);
-        console.log("Total products:", response.data.count); // Debugging log
-        console.log("Selected Cat:", selectedCategory); // Debugging log
-  
-        let filteredProducts = response.data.results;
-  
-        // No need to filter here as the API call already filters based on category
-        setProducts(filteredProducts);
-        console.log("Filtered products:", filteredProducts); // Debugging log
-        console.log("Selected Page:", currentPage); // Debugging log
-  
-        const calculatedTotalPages = Math.ceil(response.data.count / limit);
-        setTotalPages(calculatedTotalPages); // Update total pages
+        setTotalCount(response.headers['x-wp-total']);
+        setTotalPages(response.headers['x-wp-totalpages']);
+        setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -107,7 +107,8 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
     };
   
     fetchProducts();
-  }, [selectedCategory, limit, currentPage]);
+  }, [selectedCategory, limit, currentPage, sortBy]);
+
   
 
   // Pagination Component
@@ -417,12 +418,12 @@ const ProductList = ({ colClass, layoutList, openSidebar, noSidebar }) => {
                       </div>
                       <div className="product-page-filter">
                         <select onChange={(e) => setSortBy(e.target.value)}>
-                          <option value="AscOrder">Sorting items</option>
+                          <option value="asc">Sorting items</option>
                           <option value="HighToLow">High To Low</option>
                           <option value="LowToHigh">Low To High</option>
                           <option value="Newest">Newest</option>
-                          <option value="AscOrder">Asc Order</option>
-                          <option value="DescOrder">Desc Order</option>
+                          <option value="asc">Asc Order</option>
+                          <option value="desc">Desc Order</option>
                         </select>
                       </div>
                     </div>

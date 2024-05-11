@@ -41,7 +41,7 @@ const CartPage = () => {
                       <tbody key={index}>
                         <tr>
                           <td>
-                            <Link href={`/product-details/` + item.item_number}>
+                            <Link href={`/product-details/` + item.id}>
                               <a>
                               {item.variations && Array.isArray(item.variations) && item.variations.length > 0 && item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
                                   <Media
@@ -56,8 +56,8 @@ const CartPage = () => {
                             </Link>
                           </td>
                           <td>
-                            <Link href={`/product-details/` + item.item_number}>
-                              <a>{item.short_description}</a>
+                            <Link href={`/product-details/` + item.id}>
+                              <a>{item.name}</a>
                             </Link>
                             <p>Color: {item.color}</p>
                              
@@ -107,7 +107,7 @@ const CartPage = () => {
                              {item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ? (
                                 item.sizesQuantities.map((sizeQuantity, index) => (
                                   <div key={index}>
-                                    <p style={{margin:"3px 0px"}}>{sizeQuantity.size} / {sizeQuantity.quantity} ({sizeQuantity.item_number}) </p>
+                                    <p style={{margin:"3px 0px"}}>{sizeQuantity.size} / {sizeQuantity.quantity}  </p>
                                     {/* <p>Total Quantity: {totalQuantity}</p> */}
 
                                   </div>

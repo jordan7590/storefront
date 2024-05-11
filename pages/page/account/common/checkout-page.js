@@ -14,59 +14,54 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 
-const StripePay = () => {
+const StripePay = ({ onSubmit }) => {
   const stripe = useStripe();
   const elements = useElements();
 
   const [errorMessage, setErrorMessage] = useState(null);
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent the default form submission behavior
 
-    if (elements == null) {
+    if (elements == null || stripe == null) {
       return;
     }
 
-    // Trigger form validation and wallet collection
-    const {error: submitError} = await elements.submit();
-    if (submitError) {
-      // Show error to your customer
-      setErrorMessage(submitError.message);
-      return;
-    }
+    try {
+      // Trigger form validation and payment element collection
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        // Show error to your customer
+        setErrorMessage(submitError.message);
+        return;
+      }
 
-    // Create the PaymentIntent and obtain clientSecret from your server endpoint
-    const res = await fetch('/create-intent', {
-      method: 'POST',
-    });
+      // Use the Stripe client to confirm the payment
+      const { paymentIntent, error } = await stripe.confirmCardPayment('{pk_test_I8XFeUwEEFSEVuNZm11k8btS}', {
+        payment_method: {
+          card: elements.getElement(CardElement), // Assuming you're using CardElement for card input
+          billing_details: { /* billing details */ },
+        },
+      });
 
-    const {client_secret: clientSecret} = await res.json();
+      if (error) {
+        // Payment failed to process
+        setErrorMessage(error.message);
+        return;
+      }
 
-    const {error} = await stripe.confirmPayment({
-      //`Elements` instance that was used to create the Payment Element
-      elements,
-      clientSecret,
-      confirmParams: {
-        return_url: 'https://example.com/order/123/complete',
-      },
-    });
-
-    if (error) {
-      // This point will only be reached if there is an immediate error when
-      // confirming the payment. Show error to your customer (for example, payment
-      // details incomplete)
-      setErrorMessage(error.message);
-    } else {
-      // Your customer will be redirected to your `return_url`. For some payment
-      // methods like iDEAL, your customer will be redirected to an intermediate
-      // site first to authorize the payment, then redirected to the `return_url`.
+      // Payment succeeded, call the onSubmit function passed from the parent component
+      onSubmit();
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      setErrorMessage('Error processing payment. Please try again later.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <PaymentElement />
-      <button style={{marginTop:"20px"}} className="btn-solid btn" type="submit" disabled={!stripe || !elements}>
+      <button style={{ marginTop: '20px' }} className="btn-solid btn" type="submit" disabled={!stripe || !elements}>
         Pay with Stripe
       </button>
       {/* Show error message to your customers */}
@@ -75,7 +70,8 @@ const StripePay = () => {
   );
 };
 
-const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
+
+const stripePromise = loadStripe('pk_test_I8XFeUwEEFSEVuNZm11k8btS');
 
 const options = {
   mode: 'payment',
@@ -123,15 +119,56 @@ const CheckoutPage = () => {
     setPayment(value);
   };
 
-  const onSubmit = (data) => {
-    if (data !== "") {
-      alert("You submitted the form and stuff!");
-      router.push({
-        pathname: "/page/order-success",
-        state: { items: cartItems, orderTotal: cartTotal, symbol: symbol },
+  const createOrder = async (orderData) => {
+    try {
+      // Make a POST request to the WooCommerce API to create the order
+      const response = await fetch("https://tonserve.com/hfh/wp-json/wc/v3/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add your WooCommerce API credentials here (consumer key and secret)
+          Authorization: "Basic " + btoa("ck_86a3fc5979726afb7a1dd66fb12329bef3b365e2:cs_19bb38d1e28e58f10b3ee8829b3cfc182b8eb3ea"),
+        },
+        body: JSON.stringify(orderData),
       });
-    } else {
-      errors.showMessages();
+  
+      // Check if the request was successful
+      if (response.ok) {
+        const responseData = await response.json();
+        return responseData.id; // Return the ID of the created order
+      } else {
+        // Handle errors if the request was not successful
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create order");
+      }
+    } catch (error) {
+      // Handle any other errors that may occur during the process
+      throw new Error("Failed to create order: " + error.message);
+    }
+  };
+
+  const onSubmit = async (formData) => {
+    // Extract form data
+    const { billingDetails, shippingDetails, cartItems } = formData;
+  
+    // Prepare order data
+    const orderData = {
+      billing: billingDetails,
+      shipping: shippingDetails,
+      line_items: cartItems.map((item) => ({
+        product_id: item.id, // Assuming the product ID is stored in 'id'
+        quantity: item.quantity, // Assuming the quantity is stored in 'quantity'
+      })),
+      // Add any additional order data as needed
+    };
+  
+    try {
+      const orderId = await createOrder(orderData);
+      // Redirect to the thank you page with the order ID
+      window.location.href = `/thank-you?order_id=${orderId}`;
+    } catch (error) {
+      console.error("Error creating order:", error);
+      setErrorMessage("Error creating order. Please try again later.");
     }
   };
 
@@ -302,7 +339,15 @@ const CheckoutPage = () => {
                                 {/* Displaying size and quantity from selectedSizesQuantities */}
 
                                 <p>
-                                  {item.short_description} × <b>{item.qty}</b>{" "}
+                                <b>
+                                  {item.name} × 
+                                 
+                                    {
+                                    item.sizesQuantities && Array.isArray(item.sizesQuantities) && item.sizesQuantities.length > 0 ?
+                                      item.sizesQuantities.reduce((totalQty, sizeQuantity) => totalQty + sizeQuantity.quantity, 0) :
+                                      0
+                                    }
+                                  </b>{" "}
                                 </p>
                                 <p>Color : {item.color}</p>
                                 <p>Size / Quantity: </p>
@@ -314,8 +359,9 @@ const CheckoutPage = () => {
                                       <div key={index}>
                                         <p style={{ margin: "3px 0px" }}>
                                           {sizeQuantity.size} /{" "}
-                                          {sizeQuantity.quantity} (
-                                          {sizeQuantity.item_number}){" "}
+                                          {sizeQuantity.quantity} 
+                                          {/* (
+                                          {sizeQuantity.item_number}){" "} */}
                                         </p>
                                       </div>
                                     )
@@ -385,7 +431,7 @@ const CheckoutPage = () => {
                           <div className="text-end">
                            
                               <Elements stripe={stripePromise} options={options}>
-                                <StripePay />
+                              <StripePay onSubmit={onSubmit} />
                               </Elements>
                           
                           </div>
