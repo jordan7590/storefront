@@ -147,6 +147,9 @@ const CheckoutPage = () => {
     }
   };
 
+
+
+
   const onSubmit = async (formData) => {
     // Extract form data
     const { billingDetails, shippingDetails, cartItems } = formData;
@@ -177,6 +180,8 @@ const CheckoutPage = () => {
     setObj(obj);
   };
 
+
+  
   return (
     <section className="section-b-space">
       <Container>
